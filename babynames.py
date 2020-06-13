@@ -7,6 +7,7 @@
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
 
+author_name = "Nikal Morgan"
 """
 Define the extract_names() function below and change main()
 to call it.
@@ -44,7 +45,23 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
     names = []
-    # +++your code here+++
+    names_dict = {}
+    with open(filename, "r") as f:
+        html_list = f.read()
+        year = re.search(r'Popularity\sin\s(\d+)', html_list)
+        year = year.group(1)
+        names.append(year)
+        rank_names = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', html_list)
+        # print(rank_names)
+        for name in rank_names:
+            if name[1] not in names_dict:
+                names_dict[name[1]] = name[0]
+            if name[2] not in names_dict:
+                names_dict[name[2]] = name[0]
+        # print(names_dict)
+        for key in sorted(names_dict):
+            names.append(f'{key} {names_dict[key]}')
+        # print(names)
     return names
 
 
@@ -82,7 +99,18 @@ def main(args):
     # Use the create_summary flag to decide whether to print the list
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
 
-    # +++your code here+++
+    for each in file_list:
+        each_file = extract_names(each)
+        if create_summary:
+            new_file = f'{each}.summary'
+            open_f = open(new_file, 'w')
+            for info in each_file:
+                open_f.write(f'{info}\n')
+            open_f.close()
+        else:
+            print(*each_file, sep='\n') #sep= means separater equals, * operator prints by space 
+
+   
 
 
 if __name__ == '__main__':
